@@ -30,6 +30,7 @@ from urllib3.exceptions import (
 BASE_IMAGES_DIR = "cnv-tests"
 NON_EXISTS_IMAGE = "non-exists-image-test-cnao-alerts"
 
+
 class ArchImages:
     class X86_64:  # noqa: N801
         class Cirros:
