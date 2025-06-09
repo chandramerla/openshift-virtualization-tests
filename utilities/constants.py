@@ -138,7 +138,7 @@ class ArchImages:
             RHEL9_4_IMG = ""
             RHEL9_5_IMG = "rhel-95-s390x.qcow2"
             RHEL9_5_ARM64_IMG = "rhel-95-aarch64.qcow2"
-            RHEL9_6_IMG = ""
+            RHEL9_6_IMG = "rhel-96-s390x.qcow2"
             RHEL8_REGISTRY_GUEST_IMG = "registry.redhat.io/rhel8/rhel-guest-image"
             RHEL9_REGISTRY_GUEST_IMG = "registry.redhat.io/rhel9/rhel-guest-image"
             RHEL10_REGISTRY_GUEST_IMG = "registry.redhat.io/rhel10-beta/rhel-guest-image"
