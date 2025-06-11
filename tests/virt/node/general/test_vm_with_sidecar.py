@@ -44,6 +44,8 @@ def sidecar_vm(namespace, unprivileged_client):
         yield vm
 
 
+# TODO: Add cloud-init side car that works on even s390x. https://quay.io/repository/kubevirt/example-cloudinit-hook-sidecar?tab=tags
+# https://github.com/kubevirt/kubevirt/tree/release-1.5/cmd/sidecars/cloudinit
 @pytest.mark.parametrize(
     "enabled_featuregate_scope_function,",
     [
@@ -55,6 +57,7 @@ def sidecar_vm(namespace, unprivileged_client):
     indirect=True,
 )
 @pytest.mark.gating
+@pytest.mark.x86_64
 def test_vm_with_sidecar_hook(enabled_featuregate_scope_function, sidecar_vm):
     """
     Test VM with sidecar hook, Install dmidecode with annotation

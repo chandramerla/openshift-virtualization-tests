@@ -60,7 +60,7 @@ class TestMigrationVMWithMemoryLoad:
                     "memory_guest": "4Gi",
                     "cpu_cores": 2,
                 },
-                marks=pytest.mark.polarion("CNV-4661"),
+                marks=[pytest.mark.polarion("CNV-4661"), pytest.mark.x86_64(), pytest.mark.s390x()], # This is unstable. Failed at "Wait for fedora-vm-with-memory-load-1749547958-628525 network interfaces" when run with s390x marker. Twice when run manually has passed.
             ),
         ],
         indirect=True,
@@ -91,7 +91,7 @@ class TestMigrationVMWithMemoryLoad:
                     "cpu_cores": 16,
                     "cpu_threads": 1,
                 },
-                marks=[pytest.mark.special_infra, pytest.mark.high_resource_vm],
+                marks=[pytest.mark.special_infra, pytest.mark.high_resource_vm, pytest.mark.x86_64()],
             ),
         ],
         indirect=True,

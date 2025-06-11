@@ -7,6 +7,7 @@ import ipaddress
 import logging
 import os
 import os.path
+import platform
 import re
 import shlex
 import shutil
@@ -76,6 +77,8 @@ from utilities.bitwarden import get_cnv_tests_secret_by_name
 from utilities.constants import (
     AMD,
     ARM_64,
+    AMD_64,
+    S390X,
     AUDIT_LOGS_PATH,
     CDI_KUBEVIRT_HYPERCONVERGED,
     CLUSTER,
@@ -211,6 +214,8 @@ from utilities.virt import (
     wait_for_kv_stabilize,
     wait_for_windows_vm,
 )
+from tests.virt.node.general.constants import MachineTypesNames
+
 
 LOGGER = logging.getLogger(__name__)
 HTTP_SECRET_NAME = "htpass-secret-for-cnv-tests"
@@ -1159,8 +1164,12 @@ def cluster_node_cpus(schedulable_nodes):
 
 
 @pytest.fixture(scope="session")
-def cluster_common_node_cpu(cluster_node_cpus):
-    return get_common_cpu_from_nodes(cluster_cpus=set.intersection(*cluster_node_cpus.get("common").values()))
+def cluster_common_node_cpu(cluster_node_cpus, nodes_cpu_architecture):
+    # TODO: needs a proper fix listing down all the non working CPU models and checking with zKVM team
+    if nodes_cpu_architecture == S390X:
+        return "gen15b"
+    else:
+        return get_common_cpu_from_nodes(cluster_cpus=set.intersection(*cluster_node_cpus.get("common").values()))
 
 
 @pytest.fixture(scope="session")
@@ -2839,7 +2848,11 @@ def cluster_modern_cpu_model_scope_class(
 @pytest.fixture(scope="module")
 def machine_type_from_kubevirt_config(kubevirt_config_scope_module, nodes_cpu_architecture):
     """Extract machine type default from kubevirt CR."""
-    return kubevirt_config_scope_module["architectureConfiguration"][nodes_cpu_architecture]["machineType"]
+    if nodes_cpu_architecture == S390X:
+        mc_type = MachineTypesNames.s390_ccw_virtio # Workaround till fixed in kubeivrt to add architectureConfiguration for s390x similar to arm and amd64 in kubevirt config.
+    else:
+        mc_type = kubevirt_config_scope_module["architectureConfiguration"][nodes_cpu_architecture]["machineType"]
+    return mc_type
 
 
 @pytest.fixture(scope="module")

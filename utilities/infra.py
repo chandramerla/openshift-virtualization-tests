@@ -1439,7 +1439,7 @@ def get_node_selector_dict(node_selector):
 
 def get_nodes_cpu_model(nodes):
     """
-    Checks the cpu model labels on each nodes passed and returns a dictionary of nodes and supported nodes
+    Checks the cpu model labels on each nodes passed and returns a dictionary of nodes and supported cpu models
 
     :param nodes (list) : Nodes, for which cpu model labels are to be checked
 

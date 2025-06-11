@@ -4,6 +4,7 @@ import pytest
 from ocp_resources.migration_policy import MigrationPolicy
 from ocp_resources.resource import Resource
 from ocp_resources.template import Template
+from tests.conftest import nodes_cpu_architecture
 
 from tests.utils import (
     clean_up_migration_jobs,
@@ -18,6 +19,7 @@ from utilities.constants import (
     ONE_CPU_CORE,
     ONE_CPU_THREAD,
     TEN_GI_MEMORY,
+    S390X
 )
 from utilities.virt import (
     VirtualMachineForTestsFromTemplate,
@@ -55,6 +57,7 @@ def hotplugged_vm(
     unprivileged_client,
     golden_image_data_source_scope_class,
     modern_cpu_for_migration,
+    nodes_cpu_architecture,
 ):
     with VirtualMachineForTestsFromTemplate(
         name=request.param["vm_name"],
@@ -64,7 +67,7 @@ def hotplugged_vm(
         client=unprivileged_client,
         data_source=golden_image_data_source_scope_class,
         cpu_max_sockets=EIGHT_CPU_SOCKETS,
-        memory_max_guest=TEN_GI_MEMORY,
+        memory_max_guest=TEN_GI_MEMORY if nodes_cpu_architecture != S390X else None, #1. s390x doesn't support maxGuest as it doesn't support hotplug. 2. nodes_cpu_architecture isn't really coming as value, but rather as function.
         cpu_sockets=FOUR_CPU_SOCKETS,
         cpu_threads=ONE_CPU_THREAD,
         cpu_cores=ONE_CPU_CORE,
