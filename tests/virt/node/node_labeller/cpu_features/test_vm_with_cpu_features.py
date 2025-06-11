@@ -42,7 +42,7 @@ def cpu_features_vm_positive(request, unprivileged_client, namespace):
         running_vm(vm=vm)
         yield vm
 
-
+@pytest.mark.x86_64 # TODO: check if we can adopt both the tests in this file for s390x.
 def test_vm_with_cpu_feature_positive(cpu_features_vm_positive):
     """
     Test VM with cpu flag, test the VM started and is accessible via SSH
@@ -68,7 +68,7 @@ def test_vm_with_cpu_feature_positive(cpu_features_vm_positive):
                 {"name": "pclmuldq", "policy": "nomatch"},
             ],
             id="1 valid, 1 invalid policy",
-            marks=pytest.mark.polarion("CNV-3056"),
+            marks=[pytest.mark.polarion("CNV-3056"), pytest.mark.x86_64()],
         ),
     ],
 )

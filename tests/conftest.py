@@ -7,6 +7,7 @@ import ipaddress
 import logging
 import os
 import os.path
+import platform
 import re
 import shlex
 import shutil
@@ -75,6 +76,8 @@ from utilities.bitwarden import get_cnv_tests_secret_by_name
 from utilities.constants import (
     AMD,
     ARM_64,
+    AMD_64,
+    S390X,
     AUDIT_LOGS_PATH,
     CDI_KUBEVIRT_HYPERCONVERGED,
     CLUSTER,
@@ -209,6 +212,8 @@ from utilities.virt import (
     wait_for_kv_stabilize,
     wait_for_windows_vm,
 )
+from tests.virt.node.general.constants import MachineTypesNames
+
 
 LOGGER = logging.getLogger(__name__)
 HTTP_SECRET_NAME = "htpass-secret-for-cnv-tests"
@@ -2748,6 +2753,9 @@ def cluster_cpu_model_scope_function(
     hyperconverged_resource_scope_function,
     cluster_common_node_cpu,
 ):
+    # TODO: needs a proper fix listing down all the non working CPU models and checking with zKVM team
+    if nodes_cpu_architecture != S390X:
+        cluster_common_node_cpu = "gen15b"
     with update_cluster_cpu_model(
         admin_client=admin_client,
         hco_namespace=hco_namespace,
@@ -2765,6 +2773,8 @@ def cluster_cpu_model_scope_module(
     hyperconverged_resource_scope_module,
     cluster_common_node_cpu,
 ):
+    if nodes_cpu_architecture != S390X:
+        cluster_common_node_cpu = "gen15b"
     with update_cluster_cpu_model(
         admin_client=admin_client,
         hco_namespace=hco_namespace,
@@ -2782,6 +2792,8 @@ def cluster_cpu_model_scope_class(
     hyperconverged_resource_scope_class,
     cluster_common_node_cpu,
 ):
+    if nodes_cpu_architecture != S390X:
+        cluster_common_node_cpu = "gen15b"
     with update_cluster_cpu_model(
         admin_client=admin_client,
         hco_namespace=hco_namespace,
@@ -2810,9 +2822,21 @@ def cluster_modern_cpu_model_scope_class(
 
 
 @pytest.fixture(scope="module")
-def machine_type_from_kubevirt_config(kubevirt_config_scope_module):
+def machine_type_from_kubevirt_config(kubevirt_config_scope_module, nodes_cpu_architecture):
     """Extract machine type default from kubevirt CR."""
-    return kubevirt_config_scope_module["architectureConfiguration"]["amd64"]["machineType"]
+    mc_type = None
+    if nodes_cpu_architecture == ARM_64:
+        mc_type = kubevirt_config_scope_module["architectureConfiguration"][ARM_64]["machineType"]
+    if nodes_cpu_architecture == AMD_64:
+        mc_type = kubevirt_config_scope_module["architectureConfiguration"][AMD_64]["machineType"]
+    if nodes_cpu_architecture == S390X:
+        #This first needs fix in s390x to have an entry for s390x similar to arm and amd64.
+        mc_type = MachineTypesNames.s390_ccw_virtio
+    if mc_type is None:
+        raise ValueError(f"Unsupported architecture: {nodes_cpu_architecture}")
+
+    LOGGER.info(f"architectureConfiguration machineType is: {mc_type}")
+    return mc_type
 
 
 @pytest.fixture(scope="module")

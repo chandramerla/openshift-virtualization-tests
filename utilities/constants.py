@@ -212,6 +212,7 @@ VIRTCTL_CLI_DOWNLOADS = f"{VIRTCTL}-clidownloads-kubevirt-hyperconverged"
 AMD_64 = "amd64"
 ARM_64 = "arm64"
 S390X = "s390x"
+X86_64 = "x86_64"
 
 #  Network constants
 SRIOV = "sriov"

@@ -116,7 +116,7 @@ def migrated_vm(vm, machine_type_from_kubevirt_config):
     [
         pytest.param(
             {"vm_name": "default"},
-            marks=pytest.mark.polarion("CNV-3312"),
+            marks=[pytest.mark.polarion("CNV-3312"), pytest.mark.x86_64()],
         )
     ],
     indirect=True,
@@ -131,12 +131,17 @@ def test_default_machine_type(machine_type_from_kubevirt_config, vm):
         pytest.param(
             {"vm_name": "pc-q35", "machine_type": MachineTypesNames.pc_q35_rhel7_6},
             MachineTypesNames.pc_q35_rhel7_6,
-            marks=pytest.mark.polarion("CNV-3311"),
+            marks=[pytest.mark.polarion("CNV-3311"),pytest.mark.x86_64()],
+        ),
+        pytest.param(
+            {"vm_name": "s390-ccw-virtio", "machine_type": MachineTypesNames.s390_ccw_virtio},
+            MachineTypesNames.s390_ccw_virtio,
+            marks=pytest.mark.s390x(),
         )
     ],
     indirect=["vm"],
 )
-def test_pc_q35_vm_machine_type(vm, expected):
+def test_vm_machine_type(vm, expected):
     validate_machine_type(vm=vm, expected_machine_type=expected)
 
 
@@ -145,7 +150,7 @@ def test_pc_q35_vm_machine_type(vm, expected):
     [
         pytest.param(
             {"vm_name": "machine-type-mig"},
-            marks=pytest.mark.polarion("CNV-3323"),
+            marks=[pytest.mark.polarion("CNV-3323"),pytest.mark.x86_64()],
         )
     ],
     indirect=True,
@@ -157,10 +162,10 @@ def test_migrate_vm(
     machine_type_from_kubevirt_config,
     vm,
 ):
+    """Migrate VM and check machine type is same"""
     migrate_vm_and_verify(vm=vm)
 
     validate_machine_type(vm=vm, expected_machine_type=machine_type_from_kubevirt_config)
-
 
 @pytest.mark.parametrize(
     "vm, updated_kubevirt_config_machine_type",
@@ -168,7 +173,7 @@ def test_migrate_vm(
         pytest.param(
             {"vm_name": "default-kubevirt-config"},
             {"machine_type": MachineTypesNames.pc_q35_rhel8_1},
-            marks=pytest.mark.polarion("CNV-4347"),
+            marks=[pytest.mark.polarion("CNV-4347"), pytest.mark.x86_64()], # For s390x, machine type is not defined in kubevirt config and hardcoded to s390_ccw_virtio. Also on libvirt xml, it defaulted to s390-ccw-virtio_rhel9.6.0, so we can't run this test for s390x.
         )
     ],
     indirect=True,
@@ -191,7 +196,7 @@ def test_machine_type_after_vm_restart(
         pytest.param(
             {"vm_name": "default-kubevirt-config"},
             {"machine_type": MachineTypesNames.pc_q35_rhel8_1},
-            marks=pytest.mark.polarion("CNV-11268"),
+            marks=[pytest.mark.polarion("CNV-11268"), pytest.mark.x86_64()], # For s390x, machine type is not defined in kubevirt config and hardcoded to s390_ccw_virtio. Also on libvirt xml, it defaulted to s390-ccw-virtio_rhel9.6.0, so we can't run this test for s390x.
         )
     ],
     indirect=True,
@@ -210,14 +215,14 @@ def test_machine_type_after_vm_migrate(
 
     validate_machine_type(vm=vm, expected_machine_type=machine_type_from_kubevirt_config)
 
-
+#TODO: Till s390x is updated in kubevirt config, we can't run this test for s390x, as this test modifies machine type in the kubevirt config, and verifies new VM gets the new value.
 @pytest.mark.parametrize(
     "vm, updated_kubevirt_config_machine_type",
     [
         pytest.param(
             {"vm_name": "updated-kubevirt-config"},
             {"machine_type": MachineTypesNames.pc_q35_rhel8_1},
-            marks=pytest.mark.polarion("CNV-3681"),
+            marks=[pytest.mark.polarion("CNV-3681"), pytest.mark.x86_64()],
         )
     ],
     indirect=True,
@@ -229,6 +234,9 @@ def test_machine_type_kubevirt_config_update(updated_kubevirt_config_machine_typ
     validate_machine_type(vm=vm, expected_machine_type=MachineTypesNames.pc_q35_rhel8_1)
 
 
+#TODO: need to confirm if what unsupported machine type is and if one exists for s390x, otherwise we can keep it as it is pc_i440fx_rhel7_6 like amd64
+@pytest.mark.x86_64
+@pytest.mark.s390x
 @pytest.mark.polarion("CNV-3688")
 def test_unsupported_machine_type(namespace, unprivileged_client):
     vm_name = "vm-invalid-machine-type"
@@ -246,6 +254,7 @@ def test_unsupported_machine_type(namespace, unprivileged_client):
 
 @pytest.mark.gating
 @pytest.mark.polarion("CNV-5658")
+@pytest.mark.x86_64 #s390x doesn't have a machine type in kubevirt config. In code it is hardcoded to s390_ccw_virtio without release version and in downstream it is not replaced in the kubevirt config
 def test_major_release_machine_type(machine_type_from_kubevirt_config):
     # CNV should always use a major release for machine type, for example: pc-q35-rhel8.3.0
     assert machine_type_from_kubevirt_config.endswith(".0"), (
@@ -255,6 +264,7 @@ def test_major_release_machine_type(machine_type_from_kubevirt_config):
 
 @pytest.mark.gating
 @pytest.mark.polarion("CNV-8561")
+@pytest.mark.x86_64 #s390x doesn't have a machine type in kubevirt config. It is having hardcoded as s390_ccw_virtio, so no point in verifying what value is present in the kubevirt config.
 def test_machine_type_as_rhel_9_4(machine_type_from_kubevirt_config):
     """Verify that machine type in KubeVirt CR match the value pc-q35-rhel9.4.0"""
     assert machine_type_from_kubevirt_config == MachineTypesNames.pc_q35_rhel9_4, (
@@ -262,7 +272,7 @@ def test_machine_type_as_rhel_9_4(machine_type_from_kubevirt_config):
         f"does not match with {MachineTypesNames.pc_q35_rhel9_4}"
     )
 
-
+# We can't run this test on s390x because 1. the HCO doesn't have machine type 2. Need to find if there is some such legacy machine types for s390x after HCO supports the machine type
 @pytest.mark.parametrize(
     "golden_image_data_volume_scope_function, vm_from_template_scope_function, expected_machine_type",
     [
@@ -279,7 +289,7 @@ def test_machine_type_as_rhel_9_4(machine_type_from_kubevirt_config):
                 "machine_type": MachineTypesNames.pc_i440fx_rhel7_6,
             },
             MachineTypesNames.pc_i440fx_rhel7_6,
-            marks=pytest.mark.polarion("CNV-7311"),
+            marks=[pytest.mark.polarion("CNV-7311"), pytest.mark.x86_64()],
         )
     ],
     indirect=[
@@ -293,6 +303,7 @@ def test_legacy_machine_type(
     vm_from_template_scope_function,
     expected_machine_type,
 ):
+    """After updating HCO emulated machine type to include legacy machine type pc-i440fx-rhel7.6.0, check if the VM is also able to use the same machine type."""
     validate_machine_type(
         vm=vm_from_template_scope_function,
         expected_machine_type=expected_machine_type,
