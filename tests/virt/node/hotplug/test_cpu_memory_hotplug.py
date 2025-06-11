@@ -30,7 +30,12 @@ pytestmark = pytest.mark.rwx_default_storage
 
 
 LOGGER = logging.getLogger(__name__)
-TESTS_CLASS_NAME = "TestCPUHotPlug"
+TESTS_CLASS_NAME = "TestCPUHotPlug" # TODO: Understand why this is needed as it is making a test skipped with this reason: 
+# SKIPPED [1] .venv/lib/python3.12/site-packages/pytest_dependency.py:101: test_migrate_snapshot_hotplugged_vm[#ocs-storagecluster-ceph-rbd-virtualization#-RHEL-VM] depends on TestCPUHotPlug::hotplug_memory
+# SKIPPED [1] .venv/lib/python3.12/site-packages/pytest_dependency.py:101: test_decrease_memory_value[#ocs-storagecluster-ceph-rbd-virtualization#-hotplugged_sockets_memory_guest0-RHEL-VM] depends on TestCPUHotPlug::hotplug_memory
+# SKIPPED [1] .venv/lib/python3.12/site-packages/pytest_dependency.py:101: test_restart_hotplugged_vm[#ocs-storagecluster-ceph-rbd-virtualization#-RHEL-VM] depends on TestCPUHotPlug::hotplug_memory
+# SKIPPED [1] .venv/lib/python3.12/site-packages/pytest_dependency.py:101: test_hotplug_memory_above_max_value[#ocs-storagecluster-ceph-rbd-virtualization#-RHEL-VM] depends on TestCPUHotPlug::hotplug_memory
+# SKIPPED [1] .venv/lib/python3.12/site-packages/pytest_dependency.py:101: test_reduce_memory_below_start_value[#ocs-storagecluster-ceph-rbd-virtualization#-hotplugged_sockets_memory_guest0-RHEL-VM] depends on TestCPUHotPlug::hotplug_memory
 
 LATEST_WINDOWS_OS_DICT = py_config.get("latest_windows_os_dict", {})
 
@@ -67,6 +72,7 @@ def hotplug_vm_snapshot(hotplugged_vm):
                 "vm_name": "rhel-latest-cpu-hotplug-vm",
             },
             id="RHEL-VM",
+            marks=[pytest.mark.x86_64, pytest.mark.s390x],
         ),
         pytest.param(
             {
@@ -80,7 +86,7 @@ def hotplug_vm_snapshot(hotplugged_vm):
                 "vm_name": "windows-latest-cpu-hotplug-vm",
             },
             id="WIN-VM",
-            marks=[pytest.mark.special_infra, pytest.mark.high_resource_vm],
+            marks=[pytest.mark.special_infra, pytest.mark.high_resource_vm, pytest.mark.x86_64],
         ),
     ],
     indirect=True,
@@ -157,6 +163,7 @@ class TestCPUHotPlug:
     ],
     indirect=True,
 )
+@pytest.mark.x86_64 #Memory hot-(un)plug is not supported on s390x
 class TestMemoryHotPlug:
     @pytest.mark.parametrize(
         "hotplugged_sockets_memory_guest", [pytest.param({"memory_guest": SIX_GI_MEMORY})], indirect=True
