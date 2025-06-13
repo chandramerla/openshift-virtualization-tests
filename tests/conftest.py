@@ -7,7 +7,6 @@ import ipaddress
 import logging
 import os
 import os.path
-import platform
 import re
 import shlex
 import shutil
@@ -73,12 +72,11 @@ from timeout_sampler import TimeoutSampler
 
 import utilities.hco
 from tests.utils import download_and_extract_tar, update_cluster_cpu_model
+from tests.virt.node.general.constants import MachineTypesNames
 from utilities.bitwarden import get_cnv_tests_secret_by_name
 from utilities.constants import (
     AMD,
     ARM_64,
-    AMD_64,
-    S390X,
     AUDIT_LOGS_PATH,
     CDI_KUBEVIRT_HYPERCONVERGED,
     CLUSTER,
@@ -110,6 +108,7 @@ from utilities.constants import (
     RHEL9_PREFERENCE,
     RHEL_WITH_INSTANCETYPE_AND_PREFERENCE,
     RHSM_SECRET_NAME,
+    S390X,
     SSP_CR_COMMON_TEMPLATES_LIST_KEY_NAME,
     TIMEOUT_3MIN,
     TIMEOUT_4MIN,
@@ -214,7 +213,6 @@ from utilities.virt import (
     wait_for_kv_stabilize,
     wait_for_windows_vm,
 )
-from tests.virt.node.general.constants import MachineTypesNames
 
 LOGGER = logging.getLogger(__name__)
 HTTP_SECRET_NAME = "htpass-secret-for-cnv-tests"
@@ -2851,7 +2849,7 @@ def cluster_modern_cpu_model_scope_class(
 def machine_type_from_kubevirt_config(kubevirt_config_scope_module, nodes_cpu_architecture):
     """Extract machine type default from kubevirt CR."""
     if nodes_cpu_architecture == S390X:
-        mc_type = MachineTypesNames.s390_ccw_virtio # Workaround till fixed in kubeivrt to add architectureConfiguration for s390x similar to arm and amd64 in kubevirt config.
+        mc_type = MachineTypesNames.s390_ccw_virtio  # Workaround till fixed in kubeivrt to add architectureConfiguration for s390x similar to arm and amd64 in kubevirt config.
     else:
         mc_type = kubevirt_config_scope_module["architectureConfiguration"][nodes_cpu_architecture]["machineType"]
     return mc_type
