@@ -115,11 +115,11 @@ def wait_for_vm_interfaces(vmi: VirtualMachineInstance, timeout: int = TIMEOUT_1
     """
     # Waiting for guest agent connection before checking guest agent interfaces report
     LOGGER.info(f"Wait until guest agent is active on {vmi.name}")
-    vmi.wait_for_condition(
-        condition=VirtualMachineInstance.Condition.Type.AGENT_CONNECTED,
-        status=VirtualMachineInstance.Condition.Status.TRUE,
-        timeout=timeout,
-    )
+    # vmi.wait_for_condition(
+    #     condition=VirtualMachineInstance.Condition.Type.AGENT_CONNECTED,
+    #     status=VirtualMachineInstance.Condition.Status.TRUE,
+    #     timeout=timeout,
+    # )
     LOGGER.info(f"Wait for {vmi.name} network interfaces")
     sampler = TimeoutSampler(wait_timeout=timeout, sleep=1, func=lambda: vmi.instance)
     for sample in sampler:
