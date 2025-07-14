@@ -2158,7 +2158,7 @@ def wait_for_updated_kv_value(admin_client, hco_namespace, path, value, timeout=
 
 
 # function waits when VMIM resource created by cluster automatically (e.g. after node drain OR hotplug)
-def get_created_migration_job(vm, timeout=TIMEOUT_1MIN, client=None):
+def get_created_migration_job(vm, timeout=TIMEOUT_2MIN, client=None):
     sampler = TimeoutSampler(
         wait_timeout=timeout,
         sleep=TIMEOUT_5SEC,
