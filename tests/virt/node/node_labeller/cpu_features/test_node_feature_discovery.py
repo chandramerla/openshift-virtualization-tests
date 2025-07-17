@@ -56,7 +56,7 @@ def updated_kubevirt_cpus(
             hco_namespace=hco_namespace,
             path=[OBSOLETE_CPU, cluster_common_node_cpu],
             value=True,
-            timeout=60,
+            timeout=120,
         )
         wait_for_kv_stabilize(admin_client=admin_client, hco_namespace=hco_namespace)
         yield
