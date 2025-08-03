@@ -207,6 +207,7 @@ def test_successful_vm_from_cloned_dv_windows(
     ],
     indirect=True,
 )
+@pytest.mark.s390x
 def test_disk_image_after_clone(
     skip_block_volumemode_scope_function,
     unprivileged_client,
@@ -286,6 +287,7 @@ def test_successful_snapshot_clone(
 
 @pytest.mark.gating
 @pytest.mark.polarion("CNV-5607")
+@pytest.mark.s390x
 def test_clone_from_fs_to_block_using_dv_template(
     skip_test_if_no_filesystem_sc,
     skip_test_if_no_block_sc,
@@ -307,6 +309,7 @@ def test_clone_from_fs_to_block_using_dv_template(
 
 @pytest.mark.polarion("CNV-5608")
 @pytest.mark.smoke()
+@pytest.mark.s390x
 def test_clone_from_block_to_fs_using_dv_template(
     skip_test_if_no_filesystem_sc,
     skip_test_if_no_block_sc,
