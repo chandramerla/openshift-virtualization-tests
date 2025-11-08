@@ -82,27 +82,14 @@ def get_disk_usage(ssh_exec):
             {
                 "vm_name": "fedora-load-vm",
                 "template_labels": FEDORA_LATEST_LABELS,
-                "cpu_threads": 2,
-            },
-            marks=[pytest.mark.polarion("CNV-4663"), pytest.mark.x86_64()],
-        ),
-        pytest.param(
-            {
-                "dv_name": FEDORA_LATEST_OS,
-                "image": FEDORA_LATEST.get("image_path"),
-                "storage_class": py_config["default_storage_class"],
-                "dv_size": FEDORA_LATEST.get("dv_size"),
-            },
-            {
-                "vm_name": "fedora-load-vm",
-                "template_labels": FEDORA_LATEST_LABELS,
                 "cpu_threads": 1,
             },
-            marks=[pytest.mark.s390x()],
+            marks=[pytest.mark.polarion("CNV-4663")],
         ),
     ],
     indirect=True,
 )
+@pytest.mark.s390x
 @pytest.mark.rwx_default_storage
 def test_fedora_vm_load_migration(vm_with_fio, running_fio_in_vm):
     LOGGER.info("Test migrate VM with disk load")

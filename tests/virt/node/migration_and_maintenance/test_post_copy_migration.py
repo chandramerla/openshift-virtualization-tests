@@ -97,7 +97,7 @@ def drained_node_with_hotplugged_vm(admin_client, hotplugged_vm):
                 "additional_labels": VM_LABEL,
             },
             id="RHEL-VM",
-            marks=[pytest.mark.x86_64, pytest.mark.s390x],
+            marks=[pytest.mark.x86_64],
         ),
         pytest.param(
             {
@@ -120,12 +120,14 @@ def drained_node_with_hotplugged_vm(admin_client, hotplugged_vm):
 class TestPostCopyMigration:
     @pytest.mark.dependency(name=f"{TESTS_CLASS_NAME}::migrate_vm")
     @pytest.mark.polarion("CNV-11421")
+    @pytest.mark.s390x
     def test_migrate_vm(self, hotplugged_vm, vm_background_process_id, migrated_hotplugged_vm):
         assert_migration_post_copy_mode(vm=hotplugged_vm)
         assert_same_pid_after_migration(orig_pid=vm_background_process_id, vm=hotplugged_vm)
 
     @pytest.mark.dependency(name=f"{TESTS_CLASS_NAME}::node_drain", depends=[f"{TESTS_CLASS_NAME}::migrate_vm"])
     @pytest.mark.polarion("CNV-11422")
+    @pytest.mark.s390x
     def test_node_drain(self, hotplugged_vm, vm_background_process_id, drained_node_with_hotplugged_vm):
         assert_migration_post_copy_mode(vm=hotplugged_vm)
         assert_same_pid_after_migration(orig_pid=vm_background_process_id, vm=hotplugged_vm)
@@ -135,6 +137,7 @@ class TestPostCopyMigration:
     )
     @pytest.mark.dependency(name=f"{TESTS_CLASS_NAME}::hotplug_cpu", depends=[f"{TESTS_CLASS_NAME}::node_drain"])
     @pytest.mark.polarion("CNV-11423")
+    @pytest.mark.s390x
     def test_hotplug_cpu(self, hotplugged_sockets_memory_guest, hotplugged_vm, vm_background_process_id):
         assert_guest_os_cpu_count(vm=hotplugged_vm, spec_cpu_amount=SIX_CPU_SOCKETS)
         assert_same_pid_after_migration(orig_pid=vm_background_process_id, vm=hotplugged_vm)
@@ -144,10 +147,6 @@ class TestPostCopyMigration:
     )
     @pytest.mark.dependency(depends=[f"{TESTS_CLASS_NAME}::hotplug_cpu"])
     @pytest.mark.polarion("CNV-11424")
-    def test_hotplug_memory(self, request, hotplugged_sockets_memory_guest, hotplugged_vm, vm_background_process_id):
-        # Dynamically skip only this test when class is run with s390x params as memory hotplug is not supported
-        if request.node.get_closest_marker("s390x"):
-            pytest.skip("Skipping test_hotplug_memory for s390x")
-
+    def test_hotplug_memory(self, hotplugged_sockets_memory_guest, hotplugged_vm, vm_background_process_id):
         assert_guest_os_memory_amount(vm=hotplugged_vm, spec_memory_amount=SIX_GI_MEMORY)
         assert_same_pid_after_migration(orig_pid=vm_background_process_id, vm=hotplugged_vm)

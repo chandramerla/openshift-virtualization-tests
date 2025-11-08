@@ -35,6 +35,23 @@ def vm(request, cluster_cpu_model_scope_function, unprivileged_client, namespace
 
 
 @pytest.fixture()
+def vm_with_non_default_machine_type(
+    request, cluster_cpu_model_scope_function, unprivileged_client, namespace, non_default_machine_type
+):
+    name = f"vm-{request.param['vm_name']}-machine-type"
+
+    with VirtualMachineForTests(
+        name=name,
+        namespace=namespace.name,
+        body=fedora_vm_body(name=name),
+        client=unprivileged_client,
+        machine_type=non_default_machine_type,
+    ) as vm:
+        running_vm(vm=vm, check_ssh_connectivity=False)
+        yield vm
+
+
+@pytest.fixture()
 def updated_kubevirt_config_machine_type(
     request,
     hyperconverged_resource_scope_function,
@@ -84,39 +101,22 @@ def migrated_vm(vm, machine_type_from_kubevirt_config):
     indirect=True,
 )
 def test_default_machine_type(machine_type_from_kubevirt_config, vm):
-    # Workaround for s390x (https://github.com/kubevirt/kubevirt/issues/14953), as machine type missing in config and
-    # hardcoded to s390_ccw_virtio in kubevirt code.
-    if machine_type_from_kubevirt_config == MachineTypesNames.s390_ccw_virtio:
-        expected_libvirt_machine_type = MachineTypesNames.s390_ccw_virtio_rhel9_6
-    else:
-        expected_libvirt_machine_type = machine_type_from_kubevirt_config
-    validate_machine_type(
-        vm=vm,
-        expected_machine_type=machine_type_from_kubevirt_config,
-        expected_libvirt_machine_type=expected_libvirt_machine_type,
-    )
+    validate_machine_type(vm=vm, expected_machine_type=machine_type_from_kubevirt_config)
 
 
 @pytest.mark.parametrize(
-    "vm, expected, expected_libvirt",
+    "vm_with_non_default_machine_type",
     [
         pytest.param(
-            {"vm_name": "pc-q35", "machine_type": MachineTypesNames.pc_q35_rhel7_6},
-            MachineTypesNames.pc_q35_rhel7_6,
-            MachineTypesNames.pc_q35_rhel7_6,
-            marks=[pytest.mark.polarion("CNV-3311"), pytest.mark.x86_64()],
-        ),
-        pytest.param(
-            {"vm_name": "s390-ccw-virtio", "machine_type": MachineTypesNames.s390_ccw_virtio},
-            MachineTypesNames.s390_ccw_virtio,
-            MachineTypesNames.s390_ccw_virtio_rhel9_6,
-            marks=[pytest.mark.s390x()],
-        ),
+            {"vm_name": "custom-machine-type"},
+            marks=[pytest.mark.polarion("CNV-3311")],
+        )
     ],
-    indirect=["vm"],
+    indirect=["vm_with_non_default_machine_type"],
 )
-def test_vm_machine_type(vm, expected, expected_libvirt):
-    validate_machine_type(vm=vm, expected_machine_type=expected, expected_libvirt_machine_type=expected_libvirt)
+@pytest.mark.s390x
+def test_vm_machine_type(vm_with_non_default_machine_type, non_default_machine_type):
+    validate_machine_type(vm=vm_with_non_default_machine_type, expected_machine_type=non_default_machine_type)
 
 
 @pytest.mark.parametrize(
@@ -138,15 +138,9 @@ def test_vm_machine_type(vm, expected, expected_libvirt):
 def test_migrate_vm(machine_type_from_kubevirt_config, vm):
     """Migrate VM and check machine type is same"""
     migrate_vm_and_verify(vm=vm)
-    # s390x: machine type missing in config (GH#14953). Same as above.
-    if machine_type_from_kubevirt_config == MachineTypesNames.s390_ccw_virtio:
-        expected_libvirt_machine_type = MachineTypesNames.s390_ccw_virtio_rhel9_6
-    else:
-        expected_libvirt_machine_type = machine_type_from_kubevirt_config
     validate_machine_type(
         vm=vm,
         expected_machine_type=machine_type_from_kubevirt_config,
-        expected_libvirt_machine_type=expected_libvirt_machine_type,
     )
 
 
