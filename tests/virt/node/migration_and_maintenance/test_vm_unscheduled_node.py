@@ -32,7 +32,6 @@ def unscheduled_node_vm(
 
 
 @pytest.mark.gating
-@pytest.mark.x86_64
 @pytest.mark.s390x
 @pytest.mark.rwx_default_storage
 @pytest.mark.parametrize(

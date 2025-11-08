@@ -17,6 +17,7 @@ from pyhelper_utils.shell import run_ssh_commands
 from pytest_testconfig import config as py_config
 from timeout_sampler import TimeoutExpiredError, TimeoutSampler
 
+from tests.virt.constants import MachineTypesNames
 from tests.virt.node.gpu.constants import (
     GPU_PRETTY_NAME_STR,
     MDEV_NAME_STR,
@@ -46,6 +47,7 @@ from utilities.hco import (
     update_hco_annotations,
     wait_for_hco_conditions,
 )
+from utilities.jira import is_jira_open
 from utilities.storage import (
     create_dv,
     create_or_update_data_source,
@@ -305,12 +307,16 @@ def wait_for_virt_launcher_pod(vmi):
         raise
 
 
-def validate_machine_type(
-    vm, expected_machine_type, expected_libvirt_machine_type=None
-):  # Incase of s390x machine_type in VM/VMI are different than one in libvirt xml
+def validate_machine_type(vm, expected_machine_type):
     vm_machine_type = vm.instance.spec.template.spec.domain.machine.type
     vmi_machine_type = vm.vmi.instance.spec.domain.machine.type
-    if expected_libvirt_machine_type is None:
+
+    # Workaround for s390x (https://github.com/kubevirt/kubevirt/issues/14953), as machine type missing in config and
+    # hardcoded to s390_ccw_virtio in kubevirt code. So incase of s390x machine_type in VM/VMI are different
+    # than one in libvirt xml
+    if expected_machine_type == MachineTypesNames.s390_ccw_virtio and is_jira_open("CNV-71825"):
+        expected_libvirt_machine_type = MachineTypesNames.s390_ccw_virtio_rhel9_6
+    else:
         expected_libvirt_machine_type = expected_machine_type
 
     assert vm_machine_type == vmi_machine_type == expected_machine_type, (

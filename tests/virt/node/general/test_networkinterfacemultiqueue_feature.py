@@ -113,7 +113,6 @@ class TestLatestRHEL:
 
     @pytest.mark.dependency(name=f"{RHEL_TESTS_CLASS_NAME}::rhel_default_cpu_values")
     @pytest.mark.polarion("CNV-8891")
-    @pytest.mark.x86_64
     @pytest.mark.s390x
     def test_default_cpu_values(
         self,
@@ -125,7 +124,6 @@ class TestLatestRHEL:
 
     @pytest.mark.dependency(depends=[f"{RHEL_TESTS_CLASS_NAME}::rhel_default_cpu_values"])
     @pytest.mark.polarion("CNV-8892")
-    @pytest.mark.x86_64
     @pytest.mark.s390x
     def test_feature_disabled(self, network_interface_multiqueue_vm):
         update_validate_cpu_in_vm(
@@ -135,14 +133,12 @@ class TestLatestRHEL:
 
     @pytest.mark.dependency(depends=[f"{RHEL_TESTS_CLASS_NAME}::rhel_default_cpu_values"])
     @pytest.mark.polarion("CNV-8893")
-    @pytest.mark.x86_64
     @pytest.mark.s390x
     def test_four_cores(self, network_interface_multiqueue_vm):
         update_validate_cpu_in_vm(vm=network_interface_multiqueue_vm, cores=4)
 
     @pytest.mark.dependency(depends=[f"{RHEL_TESTS_CLASS_NAME}::rhel_default_cpu_values"])
     @pytest.mark.polarion("CNV-8894")
-    @pytest.mark.x86_64
     @pytest.mark.s390x
     def test_four_sockets(self, network_interface_multiqueue_vm):
         update_validate_cpu_in_vm(
@@ -152,7 +148,6 @@ class TestLatestRHEL:
 
     @pytest.mark.dependency(depends=[f"{RHEL_TESTS_CLASS_NAME}::rhel_default_cpu_values"])
     @pytest.mark.polarion("CNV-8895")
-    @pytest.mark.x86_64  # s390x does not support threads
     def test_four_threads(self, network_interface_multiqueue_vm):
         update_validate_cpu_in_vm(
             vm=network_interface_multiqueue_vm,
@@ -161,7 +156,6 @@ class TestLatestRHEL:
 
     @pytest.mark.dependency(depends=[f"{RHEL_TESTS_CLASS_NAME}::rhel_default_cpu_values"])
     @pytest.mark.polarion("CNV-8896")
-    @pytest.mark.x86_64  # s390x does not support threads
     def test_two_cores_two_sockets_two_threads(self, network_interface_multiqueue_vm):
         update_validate_cpu_in_vm(
             vm=network_interface_multiqueue_vm,
@@ -194,7 +188,6 @@ class TestLatestRHEL:
 @pytest.mark.usefixtures("golden_image_data_volume_scope_class")
 @pytest.mark.special_infra
 @pytest.mark.high_resource_vm
-@pytest.mark.x86_64
 class TestLatestWindows:
     """
     Test networkInterfaceMultiqueue on latest Windows with different cpu core/socket/thread combinations.

@@ -34,6 +34,7 @@ from utilities.constants import (
     CDI_LABEL,
     HOTPLUG_DISK_SERIAL,
     HPP_POOL,
+    OS_FLAVOR_WINDOWS,
     POD_CONTAINER_SPEC,
     TIMEOUT_1SEC,
     TIMEOUT_2MIN,
@@ -44,6 +45,7 @@ from utilities.constants import (
     TIMEOUT_10MIN,
     TIMEOUT_10SEC,
     TIMEOUT_20SEC,
+    TIMEOUT_30MIN,
     TIMEOUT_30SEC,
     TIMEOUT_60MIN,
     Images,
@@ -291,7 +293,7 @@ def data_volume(
                     # It will be in a status 'PendingPopulation' (for csi storage)
                     dv.wait_for_status(status="PendingPopulation", timeout=TIMEOUT_10SEC)
                 else:
-                    dv.wait_for_dv_success(timeout=TIMEOUT_60MIN)
+                    dv.wait_for_dv_success(timeout=TIMEOUT_60MIN if OS_FLAVOR_WINDOWS in image else TIMEOUT_30MIN)
         yield dv
 
 

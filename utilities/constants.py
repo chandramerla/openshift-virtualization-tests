@@ -831,8 +831,10 @@ POD_CONTAINER_SPEC = {
         "capabilities": {"drop": ["ALL"]},
     },
 }
-# Deprecated & usable, but are not working. Crashing for rhel9 with disabled-wait reason seen with verbose log level 8
-DEPRECATED_CPU_MODELS_S390x = [
+
+EXCLUDED_CPU_MODELS_S390x = [
+    # Deprecated & usable, but are not working.
+    # Crashing for rhel9 with disabled-wait reason seen with verbose log level 8
     "z114",
     "z114-base",
     "z13",
@@ -851,9 +853,7 @@ DEPRECATED_CPU_MODELS_S390x = [
     "zEC12-base",
     "zEC12.2",
     "zEC12.2-base",
-]
-# Usable (non-deprecated) CPU models for s390x, but crashing for rhel9
-USABLE_NOTWORKING_CPU_MODELS_S390x = [
+    # Usable (non-deprecated) CPU models for s390x, but crashing for rhel9
     "z14ZR1-base",
     "z14.2-base",
     "z14-base",
@@ -864,7 +864,6 @@ USABLE_NOTWORKING_CPU_MODELS_S390x = [
     "gen17a-base",
     "gen17b-base",
 ]
-EXCLUDED_CPU_MODELS_S390x = [*DEPRECATED_CPU_MODELS_S390x, *USABLE_NOTWORKING_CPU_MODELS_S390x]
 # Opteron - Windows image can't boot
 # Penryn - does not support WSL2
 EXCLUDED_CPU_MODELS = [*EXCLUDED_CPU_MODELS_S390x, "Opteron", "Penryn"]

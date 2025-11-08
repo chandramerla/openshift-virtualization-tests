@@ -67,7 +67,6 @@ def disk_options_vm(
 
 @pytest.mark.gating
 @pytest.mark.s390x
-@pytest.mark.x86_64
 @pytest.mark.parametrize(
     "golden_image_data_volume_scope_class,",
     [
@@ -116,7 +115,6 @@ class TestRHELIOOptions:
 
 
 @pytest.mark.tier3
-@pytest.mark.x86_64
 @pytest.mark.parametrize(
     "golden_image_data_volume_scope_class,",
     [
