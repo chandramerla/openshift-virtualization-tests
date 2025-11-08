@@ -60,7 +60,6 @@ def verify_evmcs_related_attributes(vmi_xml_dict):
 )
 @pytest.mark.special_infra
 @pytest.mark.high_resource_vm
-@pytest.mark.x86_64
 class TestWindowsHyperVFlags:
     @pytest.mark.parametrize(
         "hyperv_vm",
@@ -152,7 +151,6 @@ class TestWindowsHyperVFlags:
     [pytest.param({"os_dict": FEDORA_LATEST})],
     indirect=True,
 )
-@pytest.mark.x86_64  # hyperv enlightenment features are not supported on s390x architecture unlike KVM on x86_64
 class TestFedoraHyperVFlags:
     @pytest.mark.parametrize(
         "hyperv_vm",

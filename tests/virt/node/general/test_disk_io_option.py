@@ -51,7 +51,6 @@ def disk_options_vm(
 
 @pytest.mark.gating
 @pytest.mark.s390x
-@pytest.mark.x86_64
 @pytest.mark.parametrize(
     "golden_image_data_source_for_test_scope_class",
     [pytest.param({"os_dict": RHEL_LATEST})],
@@ -93,7 +92,6 @@ class TestRHELIOOptions:
 
 
 @pytest.mark.tier3
-@pytest.mark.x86_64
 @pytest.mark.parametrize(
     "golden_image_data_source_for_test_scope_class",
     [pytest.param({"os_dict": WINDOWS_LATEST})],

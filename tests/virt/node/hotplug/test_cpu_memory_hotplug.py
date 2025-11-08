@@ -56,13 +56,13 @@ def hotplug_vm_snapshot(hotplugged_vm):
             {"os_dict": RHEL_LATEST},
             {"template_labels": RHEL_LATEST_LABELS, "vm_name": "rhel-latest-cpu-hotplug-vm"},
             id="RHEL-VM",
-            marks=[pytest.mark.x86_64, pytest.mark.s390x],
+            marks=[pytest.mark.s390x],
         ),
         pytest.param(
             {"os_dict": WINDOWS_LATEST},
             {"template_labels": WINDOWS_LATEST_LABELS, "vm_name": "windows-latest-cpu-hotplug-vm"},
             id="WIN-VM",
-            marks=[pytest.mark.special_infra, pytest.mark.high_resource_vm, pytest.mark.x86_64],
+            marks=[pytest.mark.special_infra, pytest.mark.high_resource_vm],
         ),
     ],
     indirect=True,
@@ -123,7 +123,6 @@ class TestCPUHotPlug:
     ],
     indirect=True,
 )
-@pytest.mark.x86_64  # Memory hot-(un)plug is not supported on s390x
 class TestMemoryHotPlug:
     @pytest.mark.parametrize(
         "hotplugged_sockets_memory_guest", [pytest.param({"memory_guest": SIX_GI_MEMORY})], indirect=True

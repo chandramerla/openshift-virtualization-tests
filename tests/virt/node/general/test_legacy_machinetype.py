@@ -83,7 +83,6 @@ def rhel_8_10_vm(unprivileged_client, namespace, golden_image_data_volume_templa
     ],
     indirect=["golden_image_data_source_for_test_scope_function"],
 )
-@pytest.mark.x86_64  # no legacy machinetype for s390x which is different from emulated machine types
 def test_legacy_machine_type(
     updated_hco_emulated_machine_i440fx,
     rhel_8_10_vm,
