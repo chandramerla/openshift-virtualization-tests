@@ -2655,16 +2655,15 @@ def cluster_modern_cpu_model_scope_class(
     wait_for_kv_stabilize(admin_client=admin_client, hco_namespace=hco_namespace)
 
 
+@pytest.fixture(scope="session")
+def is_s390x_cluster(nodes_cpu_architecture):
+    return nodes_cpu_architecture == S390X
+
+
 @pytest.fixture(scope="module")
 def machine_type_from_kubevirt_config(kubevirt_config_scope_module, nodes_cpu_architecture):
     """Extract machine type default from kubevirt CR."""
-    # Workaround for s390x (https://github.com/kubevirt/kubevirt/issues/14953), as machine type missing in config and
-    # hardcoded to s390_ccw_virtio in kubevirt code.
-    if nodes_cpu_architecture == S390X:
-        mc_type = "s390-ccw-virtio"
-    else:
-        mc_type = kubevirt_config_scope_module["architectureConfiguration"][nodes_cpu_architecture]["machineType"]
-    return mc_type
+    return kubevirt_config_scope_module["architectureConfiguration"][nodes_cpu_architecture]["machineType"]
 
 
 @pytest.fixture(scope="module")
