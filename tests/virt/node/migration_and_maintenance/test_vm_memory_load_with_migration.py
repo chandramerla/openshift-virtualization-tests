@@ -60,9 +60,7 @@ class TestMigrationVMWithMemoryLoad:
                     "memory_guest": "4Gi",
                     "cpu_cores": 1,
                 },
-                marks=[
-                    pytest.mark.polarion("CNV-4661")
-                ],
+                marks=[pytest.mark.polarion("CNV-4661")],
             ),
         ],
         indirect=True,
