@@ -112,10 +112,10 @@ def test_default_machine_type(machine_type_from_kubevirt_config, vm):
             marks=[pytest.mark.polarion("CNV-3311")],
         )
     ],
-    indirect=["vm_with_non_default_machine_type"],
+    indirect=True,
 )
 @pytest.mark.s390x
-def test_vm_machine_type(vm_with_non_default_machine_type, non_default_machine_type):
+def test_vm_machine_type(non_default_machine_type, vm_with_non_default_machine_type):
     validate_machine_type(vm=vm_with_non_default_machine_type, expected_machine_type=non_default_machine_type)
 
 

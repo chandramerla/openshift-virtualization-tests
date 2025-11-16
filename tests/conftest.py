@@ -2773,11 +2773,8 @@ def cluster_modern_cpu_model_scope_class(
 
 
 @pytest.fixture(scope="function")
-def non_default_machine_type():
-    if is_x86_64():
-        return MachineTypesNames.pc_q35_rhel7_6
-    elif is_s390x():
-        return MachineTypesNames.s390_ccw_virtio
+def non_default_machine_type(is_s390x_cluster):
+    return MachineTypesNames.s390_ccw_virtio if is_s390x_cluster else MachineTypesNames.pc_q35_rhel7_6
     else:
         pytest.skip("Unsupported architecture for this test")
 
