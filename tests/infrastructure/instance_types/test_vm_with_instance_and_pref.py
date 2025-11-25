@@ -15,8 +15,7 @@ CLOCK_TIMEZONE = "America/New_York"
 CLOCK_UTC_OFFSET = 600
 CLOCK_TIMER = {
     "hpet": {"present": False},
-    "hyperv": {"present": True},
-    "kvm": {"present": True},
+    "hyperv": {"present": False},
     "pit": {"present": True, "tickPolicy": "delay"},
     "rtc": {"present": True, "tickPolicy": "catchup", "track": "guest"},
 }
