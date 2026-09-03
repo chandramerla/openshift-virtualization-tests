@@ -5,6 +5,7 @@ from ocp_resources.datavolume import DataVolume
 from utilities.constants.architecture import (
     AMD_64,
     ARM_64,
+    S390X,
 )
 from utilities.constants.images import OS_FLAVOR_FEDORA
 from utilities.constants.instance_types import (
@@ -91,6 +92,24 @@ os_matrix = {
             {"centos-stream9-arm64": {"template_os": "centos-stream9"}},
             {"fedora-arm64": {"template_os": "fedora"}},
             {"rhel9-arm64": {"template_os": "rhel9.0"}},
+        ],
+    },
+    S390X: {
+        "rhel_os_list": ["rhel-9-6"],
+        "fedora_os_list": ["fedora-42"],
+        "centos_os_list": ["centos-stream-9"],
+        "instance_type_rhel_os_list": [RHEL9_PREFERENCE],
+        "instance_type_fedora_os_list": [OS_FLAVOR_FEDORA],
+        "instance_type_centos_os_list": [CENTOS_STREAM9_PREFERENCE],
+        "data_import_cron_matrix": [
+            {"centos-stream9-s390x": {"instance_type": U1_MEDIUM_STR, "preference": CENTOS_STREAM9_PREFERENCE}},
+            {"fedora-s390x": {"instance_type": U1_MEDIUM_STR, "preference": OS_FLAVOR_FEDORA}},
+            {"rhel9-s390x": {"instance_type": U1_MEDIUM_STR, "preference": RHEL9_PREFERENCE}},
+        ],
+        "auto_update_data_source_matrix": [
+            {"centos-stream9-s390x": {"template_os": "centos-stream9"}},
+            {"fedora-s390x": {"template_os": "fedora"}},
+            {"rhel9-s390x": {"template_os": "rhel9.0"}},
         ],
     },
 }
