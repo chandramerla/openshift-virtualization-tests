@@ -7,11 +7,11 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from utilities.constants.timeouts import TIMEOUT_20MIN
-
 import pytest
 from kubernetes.dynamic.exceptions import ResourceNotFoundError
 from timeout_sampler import TimeoutExpiredError
+
+from utilities.constants.timeouts import TIMEOUT_20MIN
 
 # Add utilities to Python path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
