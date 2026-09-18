@@ -17,7 +17,6 @@ from utilities.cluster import cache_admin_client
 from utilities.constants.architecture import AMD_64, ARM_64
 from utilities.constants.cluster import KUBERNETES_ARCH_LABEL, WORKER_NODE_LABEL_KEY
 
-
 # ---------------------------------------------------------------------------
 # Architecture discovery helpers
 # ---------------------------------------------------------------------------
@@ -33,8 +32,7 @@ def get_worker_archs() -> frozenset[str]:
     return frozenset(
         node.labels[KUBERNETES_ARCH_LABEL]
         for node in Node.get(client=cache_admin_client())
-        if node.labels.get(WORKER_NODE_LABEL_KEY) is not None
-        and node.labels.get(KUBERNETES_ARCH_LABEL)
+        if node.labels.get(WORKER_NODE_LABEL_KEY) is not None and node.labels.get(KUBERNETES_ARCH_LABEL)
     )
 
 
@@ -71,17 +69,20 @@ def arch_pair_vms(
     spec_a.template.spec.architecture = arch_a
     spec_b = base_vmspec()
     spec_b.template.spec.architecture = arch_b
-    with fedora_vm(
-        namespace=namespace.name,
-        name=f"{arch_a}-vm",
-        client=unprivileged_client,
-        spec=spec_a,
-    ) as vm_a, fedora_vm(
-        namespace=namespace.name,
-        name=f"{arch_b}-vm",
-        client=unprivileged_client,
-        spec=spec_b,
-    ) as vm_b:
+    with (
+        fedora_vm(
+            namespace=namespace.name,
+            name=f"{arch_a}-vm",
+            client=unprivileged_client,
+            spec=spec_a,
+        ) as vm_a,
+        fedora_vm(
+            namespace=namespace.name,
+            name=f"{arch_b}-vm",
+            client=unprivileged_client,
+            spec=spec_b,
+        ) as vm_b,
+    ):
         vm_a.start(wait=True)
         vm_a.wait_for_agent_connected()
         vm_b.start(wait=True)
@@ -106,19 +107,22 @@ def arch_pair_udn_vms(
     ``run_vms()``.  Parametrized indirectly via pytest_generate_tests.
     """
     arch_a, arch_b = request.param
-    with udn_vm(
-        namespace_name=namespaced_layer2_user_defined_network.namespace,
-        name=f"{arch_a}-udn-vm",
-        client=admin_client,
-        binding=UDN_BINDING_DEFAULT_PLUGIN_NAME,
-        architecture=arch_a,
-    ) as vm_a, udn_vm(
-        namespace_name=namespaced_layer2_user_defined_network.namespace,
-        name=f"{arch_b}-udn-vm",
-        client=admin_client,
-        binding=UDN_BINDING_DEFAULT_PLUGIN_NAME,
-        architecture=arch_b,
-    ) as vm_b:
+    with (
+        udn_vm(
+            namespace_name=namespaced_layer2_user_defined_network.namespace,
+            name=f"{arch_a}-udn-vm",
+            client=admin_client,
+            binding=UDN_BINDING_DEFAULT_PLUGIN_NAME,
+            architecture=arch_a,
+        ) as vm_a,
+        udn_vm(
+            namespace_name=namespaced_layer2_user_defined_network.namespace,
+            name=f"{arch_b}-udn-vm",
+            client=admin_client,
+            binding=UDN_BINDING_DEFAULT_PLUGIN_NAME,
+            architecture=arch_b,
+        ) as vm_b,
+    ):
         run_vms(vms=(vm_a, vm_b))
         yield vm_a, vm_b
 
