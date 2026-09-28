@@ -12,6 +12,7 @@ from tests.virt.cluster.common_templates.custom_namespace.utils import (
     wait_for_edited_label_reconciliation,
     wait_for_template_by_name,
 )
+from utilities.architecture import get_multiarch_cpu_arch
 from utilities.constants.namespaces import NamespacesNames
 from utilities.constants.pytest import UNPRIVILEGED_USER
 
@@ -49,7 +50,12 @@ class TestCustomNamespace:
         unprivileged_client,
         custom_vm_template_namespace,
     ):
-        template_name = "rhel8-server-tiny"
+        # On s390x/arm64 clusters, SSP appends an arch suffix to template names
+        # (e.g. "rhel8-server-tiny-s390x"). Use the arch-aware name so the Template
+        # lookup succeeds and ForbiddenError is correctly triggered.
+        cpu_arch = get_multiarch_cpu_arch()
+        arch_suffix = f"-{cpu_arch}" if cpu_arch else ""
+        template_name = f"rhel8-server-tiny{arch_suffix}"
         with pytest.raises(
             ForbiddenError,
             match=rf'.*[\\]+"{template_name}[\\]+" is forbidden: '
