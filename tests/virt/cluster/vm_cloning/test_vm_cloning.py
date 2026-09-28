@@ -9,6 +9,7 @@ from pyhelper_utils.shell import run_ssh_commands
 from pytest_testconfig import config as py_config
 
 from tests.os_params import RHEL_LATEST
+from utilities.architecture import get_multiarch_cpu_arch
 from tests.virt.cluster.vm_cloning.constants import (
     ROOT_DISK_TEST_FILE_STR,
     SECOND_DISK_PATH,
@@ -73,6 +74,11 @@ def vm_with_dv_for_cloning(
     namespace,
     golden_image_data_volume_template_for_test_scope_function,
 ):
+    # SMM is an x86-only feature; s390x/arm64 have no SMM mode.
+    # EFI SecureBoot (OVMF) is also x86-specific; s390x uses s390-ccw firmware + Secure IPL,
+    # arm64 uses UEFI but without SMM. Skip both on non-amd64 clusters.
+    cpu_arch = get_multiarch_cpu_arch()
+    is_x86 = cpu_arch not in ("s390x", "arm64")
     with VirtualMachineForCloning(
         name=request.param["vm_name"],
         namespace=namespace.name,
@@ -81,8 +87,8 @@ def vm_with_dv_for_cloning(
         memory_guest=request.param["memory_guest"],
         cpu_cores=request.param.get("cpu_cores", 1),
         os_flavor=request.param["vm_name"].split("-")[0],
-        smm_enabled=True,
-        efi_params={"secureBoot": True},
+        smm_enabled=True if is_x86 else None,
+        efi_params={"secureBoot": True} if is_x86 else None,
     ) as vm:
         # Add second DV when needed
         if request.param.get("extra_dv"):
