@@ -484,6 +484,8 @@ def test_vm_annotations_in_template(base_templates):
     ],
     indirect=True,
 )
+@pytest.mark.s390x
+@pytest.mark.arm64
 def test_vmi_annotations(data_volume_scope_function, vm_from_template_with_existing_dv):
     """Verify that VM annotations are copied to the VMI object.
     For this test the underlying OS is not important; using Cirros to reduce runtime.

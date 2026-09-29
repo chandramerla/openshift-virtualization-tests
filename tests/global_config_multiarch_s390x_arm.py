@@ -115,6 +115,16 @@ os_matrix = {
 }
 
 
+# NOTE: do NOT set no_unprivileged_client = True here.
+# The test framework (tests/fixtures/cluster/auth.py) creates its own HTPasswd identity
+# provider at session start via identity_provider_with_htpasswd — it does not require a
+# pre-existing IDP. Setting no_unprivileged_client=True disables that mechanism entirely
+# and causes all unprivileged-client storage tests to silently use admin_client instead,
+# masking real permission failures.
+#
+# The single virt test that fails due to no IDP (test_unprivileged_user_cannot_access_custom_namespace)
+# is handled separately via xfail/skip on that test directly (see Sub-Task 16d follow-up).
+
 for _dir in dir():
     if not config:
         config: dict[str, Any] = {}
