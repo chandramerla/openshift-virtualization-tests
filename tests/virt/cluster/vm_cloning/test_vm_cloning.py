@@ -187,6 +187,8 @@ def test_clone_vm_two_pvc_disks(
     ],
     indirect=True,
 )
+@pytest.mark.s390x
+@pytest.mark.arm64
 @pytest.mark.polarion("CNV-10766")
 def test_clone_vm_with_instance_type_and_preference(
     rhel_vm_with_instancetype_and_preference_for_cloning,
