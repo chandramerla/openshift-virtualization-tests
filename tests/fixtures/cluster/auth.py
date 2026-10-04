@@ -19,7 +19,7 @@ from utilities.constants.cluster import KUBECONFIG
 from utilities.constants.components import CLUSTER
 from utilities.constants.namespaces import NamespacesNames
 from utilities.constants.pytest import UNPRIVILEGED_PASSWORD, UNPRIVILEGED_USER
-from utilities.constants.timeouts import TIMEOUT_4MIN, TIMEOUT_5MIN
+from utilities.constants.timeouts import TIMEOUT_4MIN, TIMEOUT_15MIN
 from utilities.data_utils import base64_encode_str
 from utilities.infra import get_deployment_by_name, login_with_user_password
 
@@ -162,16 +162,17 @@ def unprivileged_client(
     else:
         current_user = get_oc_whoami_username()
 
-        # Retry login for up to 300s after HTPasswd IDP deployment rolls out.
+        # Retry login for up to 15 minutes after HTPasswd IDP deployment rolls out.
         # _wait_for_oauth_openshift_deployment waits for the deployment rollout but not for
         # the OAuth server to actually accept the new HTPasswd credentials. On slow clusters
-        # (e.g. s390x single-master) credential propagation takes >2 minutes after rollout
-        # (confirmed from run5 log: oauth patch at 05:05:47, login still failing at 05:08:14).
-        # 60s was insufficient; 300s gives enough headroom on the slowest observed clusters.
+        # (e.g. ocp-vip1 s390x single-master) the OAuth pod restarts and credential
+        # propagation can take >10 minutes after rollout completes
+        # (run2 evidence: NewReplicaSetAvailable at 13:43:33, login still failing at 13:49:58).
+        # 300s (5 min) was insufficient; 15 min covers the observed worst case with margin.
         login_succeeded = False
         try:
             for sample in TimeoutSampler(
-                wait_timeout=TIMEOUT_5MIN,
+                wait_timeout=TIMEOUT_15MIN,
                 sleep=5,
                 func=login_with_user_password,
                 api_address=admin_client.configuration.host,
@@ -182,7 +183,7 @@ def unprivileged_client(
                     login_succeeded = True
                     break
         except TimeoutExpiredError:
-            LOGGER.warning("login_with_user_password did not succeed within 300s")
+            LOGGER.warning("login_with_user_password did not succeed within 15min")
 
         if login_succeeded:
             with open(exported_kubeconfig) as fd:
@@ -198,7 +199,7 @@ def unprivileged_client(
 
         else:
             LOGGER.warning(
-                "login_with_user_password failed after 300s retries; "
+                "login_with_user_password failed after 15min retries; "
                 "unprivileged_client falling back to admin_client"
             )
             yield admin_client
