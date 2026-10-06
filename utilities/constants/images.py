@@ -121,11 +121,12 @@ class ArchImages:
 
         Windows = Windows()
         Fedora = Fedora(
-            FEDORA42_IMG="Fedora-Cloud-Base-Generic-42-1.1.aarch64.qcow2",
+            # ibmc Artifactory has Fedora 43 aarch64; Fedora 42 aarch64 is absent
+            FEDORA43_IMG="Fedora-Cloud-Base-Generic-43-1.6.aarch64.qcow2",
             FEDORA_CONTAINER_IMAGE="quay.io/openshift-cnv/qe-cnv-tests-fedora:41-arm64",
             DISK_DEMO=FEDORA_DISK_DEMO,
         )
-        Fedora.LATEST_RELEASE_STR = Fedora.FEDORA42_IMG
+        Fedora.LATEST_RELEASE_STR = Fedora.FEDORA43_IMG
 
         Centos = Centos(CENTOS_STREAM_9_IMG="CentOS-Stream-GenericCloud-9-latest.aarch64.qcow2")
         Centos.LATEST_RELEASE_STR = Centos.CENTOS_STREAM_9_IMG

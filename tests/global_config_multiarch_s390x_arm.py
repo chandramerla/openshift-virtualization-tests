@@ -92,7 +92,7 @@ os_matrix = {
     },
     ARM_64: {
         "rhel_os_list": ["rhel-9-6"],
-        "fedora_os_list": ["fedora-42"],
+        "fedora_os_list": ["fedora-43"],
         "centos_os_list": ["centos-stream-9"],
         # centos and rhel8 have no arm64-specific preferences, while fedora, rhel9 and rhel10 do.
         "instance_type_rhel_os_list": [RHEL10_PREFERENCE],
