@@ -47,6 +47,7 @@ from tests.utils import create_cirros_vm
 from utilities.architecture import get_multiarch_cpu_arch
 from utilities.artifactory import get_artifactory_config_map, get_artifactory_secret
 from utilities.constants import Images
+from utilities.constants.architecture import ARM_64
 from utilities.constants.cluster import CNV_TEST_SERVICE_ACCOUNT, KUBERNETES_ARCH_LABEL
 from utilities.constants.components import CDI_OPERATOR, CDI_UPLOADPROXY
 from utilities.constants.images import OS_FLAVOR_FEDORA, OS_FLAVOR_RHEL
@@ -520,9 +521,10 @@ def rhel10_data_source_scope_module(golden_images_namespace):
 
 @pytest.fixture(scope="module")
 def fedora_data_source_scope_module(golden_images_namespace):
+    cpu_arch = py_config.get("cpu_arch", "")
     return DataSource(
         namespace=golden_images_namespace.name,
-        name=OS_FLAVOR_FEDORA,
+        name=f"{OS_FLAVOR_FEDORA}-{cpu_arch}" if cpu_arch else OS_FLAVOR_FEDORA,
         client=golden_images_namespace.client,
         ensure_exists=True,
     )

@@ -196,6 +196,7 @@ def dvs_and_vms_from_public_registry(unprivileged_client, namespace, storage_cla
                 os_flavor=OS_FLAVOR_FEDORA,
                 data_volume=dv,
                 memory_requests=Images.Fedora.DEFAULT_MEMORY_SIZE,
+                cpu_arch=py_config.get("cpu_arch", ""),
             )
             vm.deploy(wait=True)
             vm.start()
