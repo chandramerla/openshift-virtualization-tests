@@ -344,6 +344,7 @@ def test_virtctl_image_upload_with_exist_pvc(
                 memory_guest=Images.Cirros.DEFAULT_MEMORY_SIZE,
                 pvc=empty_pvc,
                 client=namespace.client,
+                cpu_arch=py_config.get("cpu_arch", ""),
             ) as vm:
                 running_vm(vm=vm, wait_for_interfaces=False)
 

@@ -103,6 +103,7 @@ def test_successful_vm_restart_with_cloned_dv(
             os_flavor=OS_FLAVOR_FEDORA,
             memory_guest=Images.Fedora.DEFAULT_MEMORY_SIZE,
             wait_for_interfaces=True,
+            cpu_arch=py_config.get("cpu_arch", ""),
         ) as vm_dv:
             restart_vm_wait_for_running_vm(vm=vm_dv)
 
