@@ -157,6 +157,7 @@ def created_vm_list(unprivileged_client, created_blank_dv_list, storage_class_na
                 data_volume=dv,
                 image=Images.Fedora.FEDORA_CONTAINER_IMAGE,
                 memory_guest=Images.Fedora.DEFAULT_MEMORY_SIZE,
+                cpu_arch=py_config.get("cpu_arch", ""),
             )
             vm.deploy(wait=True)
             vms_list.append(vm)
