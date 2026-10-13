@@ -511,9 +511,10 @@ def cluster_csi_drivers_names(admin_client):
 
 @pytest.fixture(scope="module")
 def rhel10_data_source_scope_module(golden_images_namespace):
+    cpu_arch = py_config.get("cpu_arch", "")
     return DataSource(
         namespace=golden_images_namespace.name,
-        name="rhel10",
+        name=f"rhel10-{cpu_arch}" if cpu_arch else "rhel10",
         client=golden_images_namespace.client,
         ensure_exists=True,
     )
