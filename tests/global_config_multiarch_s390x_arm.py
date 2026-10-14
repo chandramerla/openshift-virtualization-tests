@@ -125,6 +125,13 @@ os_matrix = {
 # The single virt test that fails due to no IDP (test_unprivileged_user_cannot_access_custom_namespace)
 # is handled separately via xfail/skip on that test directly (see Sub-Task 16d follow-up).
 
+# Alpine guest credentials: root user, no password.
+# Used by test_virtctl_image_upload_with_exist_pvc (and any other test that boots
+# an Alpine VM and needs SSH) when ARM64.Cirros is mapped to alpine-aarch64-disk.qcow2.
+os_login_param: dict = {
+    "alpine": {"username": "root", "password": ""},
+}
+
 for _dir in dir():
     if not config:
         config: dict[str, Any] = {}
