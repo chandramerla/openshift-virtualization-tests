@@ -228,6 +228,7 @@ def test_successful_snapshot_clone(
                 os_flavor=OS_FLAVOR_FEDORA,
                 memory_guest=Images.Fedora.DEFAULT_MEMORY_SIZE,
                 wait_for_interfaces=True,
+                cpu_arch=py_config.get("cpu_arch", ""),
             ) as vm_dv:
                 assert_guest_disk_count(vm=vm_dv)
         pvc = cdv.pvc
