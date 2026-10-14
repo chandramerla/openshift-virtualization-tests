@@ -480,6 +480,7 @@ def multi_storage_cirros_vm(request, namespace, unprivileged_client, storage_cla
         dv_name=f"{request.param['dv_name']}-{storage_class_name_scope_function}",
         vm_name=request.param["vm_name"],
         annotations=request.param.get("annotations"),
+        cpu_arch=py_config.get("cpu_arch", ""),
     ) as vm:
         yield vm
 
