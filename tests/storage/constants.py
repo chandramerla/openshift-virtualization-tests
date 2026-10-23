@@ -1,7 +1,5 @@
 from utilities.constants import Images
 from utilities.constants.images import ArchImages
-from utilities.constants.storage import StorageClassNames
-from utilities.storage import HppCsiStorageClass
 
 NUM_BLANK_DISKS = 3
 
@@ -38,6 +36,7 @@ def get_fedora_container_image(cpu_arch: str = "") -> str:
     if tag:
         return f"docker://{tag}"
     return QUAY_FEDORA_CONTAINER_IMAGE
+
 
 TEST_FILE_NAME = "test-file.txt"
 TEST_FILE_CONTENT = "test-content"
